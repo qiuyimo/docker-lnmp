@@ -1,0 +1,36 @@
+version: "1.0.0"
+services:
+  # nginx 的配置路径可以查看 https://github.com/nginxinc/docker-nginx/blob/dbd053d52727bc8db0fec704caa22b8e0d5f6c84/mainline/alpine/Dockerfile
+  nginx:
+    # 同时设置了 build 和 image, build 后以 image 的定义命名.
+    build:
+      # 指定 build 的路径.
+      context: ./dockerfile.d/nginx
+      # 传递参数, 这些参数会在构建时使用.
+      args:
+        version: ${NGINX_VERSION}
+    image: ${IMAGE_PREFIX}/nginx:${NGINX_VERSION}
+    # 暴露容器端口到主机的任意端口或指定端口, 其他容器和主机都可以使用这个端口.
+    ports:
+      - ${NGINX_PORT}:80
+    # labels 的作用是为了方便刷选容器. docker ps -f labels=com.qiuyuhome.lnmp, 详见: https://github.com/khs1994-docker/lnmp/issues/282
+    labels:
+      - ${LABEL_PRIFIX}.nginx=true
+      - ${LABEL_PRIFIX}=true
+    # 数据卷所挂载路径设置, 可以设置宿主机路径（HOST:CONTAINER）或加上访问模式（HOST:CONTAINER:ro）,由（:）分隔的三个字段组成，<卷名>:<容器路径>:<选项列表>。选项列表，如：ro只读
+    volumes:
+      - ./app:/app:rw
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx/error.log:/var/log/nginx/error.log:rw
+      - ./logs/nginx/access.log:/var/log/nginx/access.log:rw
+    # 与 docker run -w 的效果一样. 指定当前的工作目录. 简单来说就是启动容器之后, 容器的当前目录就会是设置的这个目录.
+    working_dir: /app
+    # 与 docker run --restart 的效果一样. 可以设置三个值. no(默认值):容器退出时不重启, on-failure: 容器故障退出（返回值非零）时重启, always: 容器退出时总是重启
+    restart: always
+    # 网络, todo.
+    networks:
+      - backend
+    # 传递给容器的环境变量
+    environment:
+      - TZ: ${TZ}
+

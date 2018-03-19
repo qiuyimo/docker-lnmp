@@ -1,0 +1,167 @@
+networks:
+  backend:
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+  frontend:
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+secrets:
+  db_root_password:
+    file: /Users/qiuyu/git/docker/lnmp/secrets/db_root_password.txt
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+services:
+  mysql:
+    command:
+    - mysqld
+    - --character-set-server=utf8mb4
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      TZ: Asia/Shanghai
+    image: mysql:8.0.3
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+      com.khs1994.lnmp.mysql: "true"
+    networks:
+      backend: null
+    ports:
+    - external_ip: 127.0.0.1
+      published: 3306
+      target: 3306
+    restart: always
+    secrets:
+    - source: db_root_password
+    volumes:
+    - /Users/qiuyu/git/docker/lnmp/backup/mysql:/backup:rw
+    - /Users/qiuyu/git/docker/lnmp/backup/init:/docker-entrypoint-initdb.d:ro
+    - /Users/qiuyu/git/docker/lnmp/config/mysql/conf.d/docker.cnf:/etc/mysql/conf.d/docker.cnfro:rw
+    - mysql-data:/var/lib/mysql:rw
+    - /Users/qiuyu/git/docker/lnmp/logs/mysql:/var/log/mysql:rw
+  nginx:
+    depends_on:
+    - php7
+    environment:
+      TZ: Asia/Shanghai
+    image: khs1994/nginx:1.13.9-tls1.3-stretch
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+      com.khs1994.lnmp.nginx: "true"
+    networks:
+      frontend: null
+    ports:
+    - external_ip: 0.0.0.0
+      published: 80
+      target: 80
+    - external_ip: 0.0.0.0
+      published: 443
+      target: 443
+    restart: always
+    volumes:
+    - /Users/qiuyu/git/docker/lnmp/app:/app:rw
+    - source: /Users/qiuyu/git/docker/lnmp/config/nginx
+      target: /etc/nginx/conf.d
+      type: bind
+    - /Users/qiuyu/git/docker/lnmp/config/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    - /Users/qiuyu/git/docker/lnmp/logs/nginx:/var/log/nginx:rw
+    working_dir: /app
+  php7:
+    command: php-fpm -R -F
+    environment:
+      ACME_VERSION: 2.7.7
+      APP_ENV: development
+      KHS1994_LNMP_DOCKER_VERSION: v18.05-rc1 x86_64 With Pull Docker Image
+      LNMP_DOCKER_COMPOSE_VERSION: 1.18.0
+      TZ: Asia/Shanghai
+    expose:
+    - '9000'
+    image: khs1994/php-fpm:7.2.3-alpine3.7
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+      com.khs1994.lnmp.php: "true"
+    networks:
+      backend: null
+      frontend: null
+    restart: always
+    volumes:
+    - /Users/qiuyu/git/docker/lnmp/app:/app:rw
+    - /Users/qiuyu/git/docker/lnmp/config/php/php-fpm.d/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf:ro
+    - /Users/qiuyu/git/docker/lnmp/config/php/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
+    - /Users/qiuyu/git/docker/lnmp/config/php/php/conf.d/error-log.ini:/usr/local/etc/php/conf.d/error-log.ini:ro
+    - /Users/qiuyu/git/docker/lnmp/config/php/php.development.ini:/usr/local/etc/php/php.ini:ro
+    - zoneinfo-data:/usr/share/zoneinfo:rw
+    - /Users/qiuyu/git/docker/lnmp/logs/php-fpm:/var/log/php-fpm:rw
+  phpmyadmin:
+    environment:
+      PMA_HOST: mysql
+      TZ: Asia/Shanghai
+    image: phpmyadmin/phpmyadmin
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+      com.khs1994.lnmp.phpmyadmin: "true"
+    networks:
+      backend: null
+    ports:
+    - external_ip: 127.0.0.1
+      published: 8080
+      target: 80
+    restart: always
+    volumes:
+    - phpmyadmin-data:/sessions:rw
+  redis:
+    command:
+    - redis-server
+    - /redis.conf
+    - --daemonize no
+    - --logfile /var/log/redis/redis.log
+    - --bind 0.0.0.0
+    environment:
+      TZ: Asia/Shanghai
+    image: redis:4.0.8-alpine
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+      com.khs1994.lnmp.redis: "true"
+    networks:
+      backend: null
+    ports:
+    - external_ip: 127.0.0.1
+      published: 6379
+      target: 6379
+    restart: always
+    volumes:
+    - source: redis-data
+      target: /data
+      type: volume
+      volume:
+        nocopy: true
+    - /Users/qiuyu/git/docker/lnmp/config/redis/redis.conf:/redis.conf:ro
+    - zoneinfo-data:/usr/share/zoneinfo:rw
+    - source: /Users/qiuyu/git/docker/lnmp/logs/redis
+      target: /var/log/redis
+      type: bind
+version: '3.5'
+volumes:
+  mysql-data:
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+  phpmyadmin-data:
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+  redis-data:
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
+  zoneinfo-data:
+    labels:
+      com.khs1994.lnmp: "true"
+      com.khs1994.lnmp.app.env: development
