@@ -70,7 +70,7 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
-      - ./mysql-data:/var/lib/mysql:rw
+      - ./db-data/mysql:/var/lib/mysql:rw
       - ./logs/mysql:/var/log/mysql:rw
     command:
       - mysqld
@@ -119,7 +119,20 @@ services:
     labels:
       - ${LABEL_PRIFIX}.redis=true
       - ${LABEL_PRIFIX}.lnmp=true
-
+  postgresql:
+    build:
+      context: ./dockerfile.d/postgresql
+    image: ${IMAGE_PREFIX}/postgres:${POSTGRESQL_VERSION}
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=test
+    volumes:
+      - ./db-data/postgresql:/var/lib/postgresql/data:rw
+    ports:
+      - "${POSTGRESQL_PORT}:5432"
+    networks:
+      - frontend
+      - backend
 networks:
     backend:
     frontend:

@@ -15,4 +15,14 @@ if ($dbh) {
 
 echo "<hr/>";
 
+$dbh = new PDO("pgsql:host=postgresql;port=5432;dbname=postgres", 'postgres', '');
+// $dbh = new PDO("pgsql:host=192.168.10.2;port=5432;dbname=postgres", 'postgres', 'postgres');
+if ($dbh) {
+    echo 'Connect PostgreSQL access';
+} else {
+    echo 'Connect PostgreSQL error';
+}
+
+echo "<hr/>";
+
 echo phpinfo();
