@@ -7,7 +7,6 @@ services:
     build:
       # 指定 build 的路径.
       context: ./dockerfile.d/nginx
-      # todo. 传递参数, 这些参数会在构建时使用. 使用方法?
       # args:
       #  version: ${NGINX_VERSION}
     image: ${IMAGE_PREFIX}/nginx:${NGINX_VERSION}
@@ -35,7 +34,7 @@ services:
     # 网络
     networks:
       - backend
-    # 传递给容器的环境变量, 注意, 这里是key, value, 用等号连接. todo, 用法.
+    # 传递给容器的环境变量, 注意, 这里是key, value, 用等号连接.
     environment:
       - TZ=Asia/Shanghai
     depends_on:
@@ -122,7 +121,6 @@ services:
       - ${LABEL_PRIFIX}.redis=true
       - ${LABEL_PRIFIX}.lnmp=true
 
-# todo. 使用网络, 必须先定义?
 networks:
     backend:
     frontend:
