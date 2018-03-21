@@ -90,7 +90,7 @@ services:
     environment:
       - PMA_HOST=mysql
     ports:
-      - ${PHPMYADMIN}:80
+      - ${PHPMYADMIN_PORT}:80
     volumes:
       - /sessions
     labels:
@@ -101,6 +101,27 @@ services:
     networks:
       - frontend
       - backend
+
+  redis:
+    build:
+      context: ./dockerfile.d/redis
+    image: ${IMAGE_PREFIX}/redis:${REDIS_VERSION}
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - ./config/redis/redis.conf:/redis.conf:ro
+      - ./logs/redis:/var/log/redis:rw
+    command: [
+      "redis-server",
+      "/redis.conf",
+      "--daemonize no",
+      "--logfile /var/log/redis/redis.log",
+      "--bind 0.0.0.0"
+      ]
+    labels:
+      - ${LABEL_PRIFIX}.redis=true
+      - ${LABEL_PRIFIX}.lnmp=true
+
 # todo. 使用网络, 必须先定义?
 networks:
     backend:
