@@ -32,7 +32,7 @@ services:
     container_name: lnmp-nginx
     # 与 docker run --restart 的效果一样. 可以设置三个值. no(默认值):容器退出时不重启, on-failure: 容器故障退出（返回值非零）时重启, always: 容器退出时总是重启
     restart: always
-    # 网络, todo, 这个具体的使用方法是什么?
+    # 网络
     networks:
       - backend
     # 传递给容器的环境变量, 注意, 这里是key, value, 用等号连接. todo, 用法.
@@ -59,6 +59,31 @@ services:
     labels:
       - ${LABEL_PRIFIX}.php=true
       - ${LABEL_PRIFIX}.lnmp=true
+    depends_on:
+      - mysql
+  mysql:
+    build:
+      context: ./dockerfile.d/mysql
+    image: ${IMAGE_PREFIX}/mysql:${MYSQL_VERSION}
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql:rw
+      - ./logs/mysql:/var/log/mysql:rw
+      - ./backup/mysql:/backup:rw
+    command:
+      - mysqld
+      - --character-set-server=utf8mb4
+    labels:
+      - ${LABEL_PRIFIX}.mysql=true
+      - ${LABEL_PRIFIX}.lnmp=true
+    networks:
+      - frontend
+      - backend
+
 # todo. 使用网络, 必须先定义?
 networks:
     backend:

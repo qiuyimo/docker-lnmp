@@ -55,6 +55,7 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
                                     --with-freetype-dir=/usr/include/ \
                                     --with-jpeg-dir=/usr/include/ \
         && docker-php-ext-install -j"$(nproc)" bcmath \
+                                               mysqli \
                                                pdo_pgsql \
                                                pdo_mysql \
                                                zip \

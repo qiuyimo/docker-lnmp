@@ -1,3 +1,4 @@
 *.xml
 .idea
 *.log
+mysql-data/
