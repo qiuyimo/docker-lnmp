@@ -28,6 +28,8 @@ services:
       - ./logs/nginx:/var/log/nginx:rw
     # 与 docker run -w 的效果一样. 指定当前的工作目录. 简单来说就是启动容器之后, 容器的当前目录就会是设置的这个目录. 经测试, 会自动创建这个目录
     working_dir: /app
+    # 指定一个自定义容器名称, 而不是生成的默认名称, 由于Docker容器名称必须是唯一的，因此如果您指定了自定义名称，则无法将服务扩展到1个容器之外.
+    container_name: lnmp-nginx
     # 与 docker run --restart 的效果一样. 可以设置三个值. no(默认值):容器退出时不重启, on-failure: 容器故障退出（返回值非零）时重启, always: 容器退出时总是重启
     restart: always
     # 网络, todo, 这个具体的使用方法是什么?
@@ -36,7 +38,38 @@ services:
     # 传递给容器的环境变量, 注意, 这里是key, value, 用等号连接. todo, 用法.
     environment:
       - TZ=Asia/Shanghai
+
+  php7.2:
+    build:
+      context: ./dockerfile.d
+    image: ${IMAGE_PREFIX}/nginx:${PHP_VERSION}
+    volumes:
+      - ./app:${LNMP_PHP_PATH:-/app}
+      #
+      # php-fpm config set in zz-docker.conf one file
+      #
+      - ./config/php/php-fpm.d/${PHP_FPM_CONF:-zz-docker.conf}:/usr/local/etc/php-fpm.d/zz-docker.conf:ro
+      - ./config/php/${PHP_INI:-php.development.ini}:/usr/local/etc/php/php.ini:ro
+      - ./config/php/php/conf.d/${XDEBUG_INI:-xdebug.ini}:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
+      - ./config/php/conf.d/${PHP_ERROR_INI:-error-log.ini}:/usr/local/etc/php/conf.d/error-log.ini:ro
+      - ./logs/php/php-fpm:/var/log/php-fpm:rw
+    networks:
+      - frontend
+      - backend
+    expose:
+      - "9000"
+    command: php-fpm -R -F
+    environment:
+      - APP_ENV=development
+      - KHS1994_LNMP_DOCKER_VERSION=${KHS1994_LNMP_DOCKER_VERSION:-v18.05-rc1} x86_64 With Pull Docker Image
+    labels:
+      - ${LNMP_DOMAIN:-com.khs1994.lnmp}.php=true
+    labels:
+      - ${LABEL_PRIFIX}.nginx=true
+      - ${LABEL_PRIFIX}.lnmp=true
+
 # todo. 使用网络, 必须先定义?
 networks:
     backend:
+    frontend:
 
