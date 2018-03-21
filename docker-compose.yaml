@@ -83,7 +83,24 @@ services:
     networks:
       - frontend
       - backend
-
+  phpmyadmin:
+    build:
+      context: ./dockerfile.d/phpmyadmin
+    image: ${IMAGE_PREFIX}/phpmyadmin:${PHPMYADMIN_VERSION}
+    environment:
+      - PMA_HOST=mysql
+    ports:
+      - ${PHPMYADMIN}:80
+    volumes:
+      - /sessions
+    labels:
+      - ${LABEL_PRIFIX}.phpmyadmin=true
+      - ${LABEL_PRIFIX}.lnmp=true
+    depends_on:
+      - mysql
+    networks:
+      - frontend
+      - backend
 # todo. 使用网络, 必须先定义?
 networks:
     backend:
