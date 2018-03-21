@@ -9,6 +9,7 @@ services:
       context: ./dockerfile.d/nginx
       # args:
       #  version: ${NGINX_VERSION}
+
     image: ${IMAGE_PREFIX}/nginx:${NGINX_VERSION}
     # 暴露容器端口到主机的任意端口或指定端口, 其他容器和主机都可以使用这个端口.
     ports:
