@@ -109,8 +109,12 @@ services:
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
-      - ./config/redis/redis.conf:/redis.conf:ro
-      - ./logs/redis:/var/log/redis:rw
+      - ./config/redis/redis.conf:/redis.conf:rw
+      # - ./logs/redis:/var/log/redis:rw 用这个会报错, 得用下面的这个, todo. 原因?
+      - type: bind
+        source: ./logs/redis
+        target: /var/log/redis
+        read_only: false
     command: [
       "redis-server",
       "/redis.conf",
@@ -130,6 +134,10 @@ services:
       - POSTGRES_DB=test
     volumes:
       - ./db-data/postgresql:/var/lib/postgresql/data:rw
+      - ./config/postgresql/pg_hba.conf:/var/lib/postgresql/pg_hba.conf:rw
+      - ./config/postgresql/pg_ident.conf:/var/lib/postgresql/pg_ident.conf:rw
+      - ./config/postgresql/postgresql.auto.conf:/var/lib/postgresql/postgresql.auto.conf:rw
+      - ./config/postgresql/postgresql.conf:/var/lib/postgresql/postgresql.conf:rw
     ports:
       - "${POSTGRESQL_PORT}:5432"
     networks:
