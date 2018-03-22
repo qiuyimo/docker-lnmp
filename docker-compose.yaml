@@ -73,6 +73,7 @@ services:
     volumes:
       - ./db-data/mysql:/var/lib/mysql:rw
       - ./logs/mysql:/var/log/mysql:rw
+      - ./config/mysql:/etc/mysql:rw
     command:
       - mysqld
       - --character-set-server=utf8mb4
