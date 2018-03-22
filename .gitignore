@@ -1,4 +1,5 @@
 *.xml
 .idea
 *.log
+mysql-data/*
 mysql-data/
