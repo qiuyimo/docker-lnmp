@@ -15,12 +15,27 @@ if ($dbh) {
 
 echo "<hr/>";
 
-$dbh = new PDO("pgsql:host=postgresql;port=5432;dbname=postgres", 'postgres', '');
-// $dbh = new PDO("pgsql:host=192.168.10.2;port=5432;dbname=postgres", 'postgres', 'postgres');
+// $dbh = new PDO("pgsql:host=postgresql;port=5432;dbname=postgres", 'postgres', '');
+$dbh = new PDO("pgsql:host=192.168.10.2;port=5432;dbname=postgres", 'postgres', 'postgres');
 if ($dbh) {
     echo 'Connect PostgreSQL access';
 } else {
     echo 'Connect PostgreSQL error';
+}
+
+echo "<hr/>";
+
+
+$host        = "host=192.168.10.2";
+$port        = "port=5432";
+$dbname      = "dbname=postgres";
+$credentials = "user=postgres password=postgres";
+
+$db = pg_connect( "$host $port $dbname $credentials");
+if (!$db) {
+    echo "Error : Unable to open database\n";
+} else {
+    echo "Opened database successfully\n";
 }
 
 echo "<hr/>";

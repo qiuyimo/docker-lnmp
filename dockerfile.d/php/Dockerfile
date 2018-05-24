@@ -61,6 +61,7 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
                                                zip \
                                                gd \
                                                pcntl \
+                                               pgsql \
         && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         && pecl install mongodb \
                         igbinary \
@@ -70,6 +71,7 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
                         xdebug \
                         yaml \
                         swoole \
+                        pgsql \
         && docker-php-ext-enable mongodb \
                                  redis \
                                  memcached \
@@ -79,6 +81,7 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
                                  # opcache 已默认安装，需要自行载入
                                  opcache \
                                  swoole \
+                                 pgsql \
         && apk del .build-deps linux-headers .khs1994-php-fpm-build-deps \
         && rm -rf /tmp/*
 
