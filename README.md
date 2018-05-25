@@ -69,13 +69,23 @@ services:
 常用的扩展都已经安装了. 包括 xdebug 的配置. 方便开发调试.
 
 ### MySQL
+* user: root
+* pwd: root
+* port: 3306
+* dbname: test
 
 ### PostgreSQL
+* user: postgres
+* pwd: root
+* port: 5432
+* dbname: postgres
 
 ### Redis
 
+
 ### PHPMyAdmin
 
+* 127.0.0.1:8080
 
 ## 常用命令
 
