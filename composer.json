@@ -1,0 +1,15 @@
+{
+    "require": {
+        "mikehaertl/php-shellcommand": "~1.4.0",
+        "vlucas/phpdotenv" : "~2.4.0",
+        "symfony/var-dumper": "~4.0.3",
+        "symfony/finder": "~4.0.7",
+        "symfony/console": "~4.0.8",
+        "symfony/filesystem": "~4.0.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Command\\": "command/"
+        }
+    }
+}

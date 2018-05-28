@@ -11,3 +11,4 @@ config/nginx/conf.d/*
 !config/nginx/conf.d/localhost.conf
 
 .DS_Store
+vendor/
